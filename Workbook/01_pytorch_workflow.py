@@ -1,4 +1,5 @@
 import numpy as np
+from pathlib import Path
 
 # Exploring an e2e pytorch workflow
 
@@ -290,3 +291,62 @@ plt.ylabel("Loss")
 plt.xlabel("Epochs")
 plt.legend()
 plt.show()
+
+
+
+
+# Saving a model in PyTorch
+### There are 3 main methods for saving/loading in PyTorch
+# 1. torch.save() - allows you save a PyTorch object in Python's pickle format
+# 2. torch.load() - allows you to load a PyTorch object
+# 3. torch.nn.module.load_save_dict() - allows to load a models' saved state dictionary
+
+# Saving our model
+
+
+# 1. Create model directory
+MODEL_PATH = Path('models')
+
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+# 2. Create model save path
+MODEL_NAME = "01_pytorch_workflow_model_0.pth"  # PyTorch objects are saved as .pt or pth
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+print(f"Saving model to {MODEL_SAVE_PATH}")
+torch.save(obj=model_0.state_dict(), f=MODEL_SAVE_PATH)
+
+# Loading a model
+### Since we saved state_dict instead of entire model we'll create a new model class the load in state_dict
+
+### To load in a saved state_dict we need to instantiate a new model class
+loaded_model_0 = LinearRegressionModel()
+print(loaded_model_0.state_dict())
+# Load the saved state_dict of model_0 (will update the new instance with updated params)
+loaded_model_0.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
+print(loaded_model_0.state_dict())
+
+# Make predictions with our loaded model
+loaded_model_0.eval()
+with torch.inference_mode():
+    loaded_model_preds = loaded_model_0(X_test)
+print(loaded_model_preds)
+
+# Make some model preds (This is just to make sure that the original preds are present)
+model_0.eval()
+with torch.inference_mode():
+    y_preds = model_0(X_test)
+
+
+# compare loaded model preds with original preds
+print(y_preds == loaded_model_preds)
+# eval: tensor([[True],
+#         [True],
+#         [True],
+#         [True],
+#         [True],
+#         [True],
+#         [True],
+#         [True],
+#         [True],
+#         [True]])
