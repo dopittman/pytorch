@@ -165,7 +165,7 @@ with torch.inference_mode():
 # Save and Load model
 
 # 1. Create model directory
-MODEL_PATH = Path('models')
+MODEL_PATH = Path('../models')
 
 MODEL_PATH.mkdir(parents=True, exist_ok=True)
 
